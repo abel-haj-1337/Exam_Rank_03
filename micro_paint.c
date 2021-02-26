@@ -45,6 +45,7 @@ void	ft_free_map(char ***m, int len)
 		i = 0;
 		while (i < len)
 		{
+			printf("||%i||\n|%s|\n", i, *m[i]);
 			free(*m[i]);
 			*m[i] = NULL;
 			i++;
@@ -64,7 +65,7 @@ char	**ft_init_map(int width, int height, char c)
 
 	if (!m)
 	{
-		printf("shit1\n");
+		// printf("shit1\n");
 		return (NULL);
 	}
 
@@ -75,7 +76,7 @@ char	**ft_init_map(int width, int height, char c)
 
 		if (!m[i])
 		{
-			printf("shit2\n");
+			// printf("shit2\n");
 			ft_free_map(&m, i + 1);
 			return (NULL);
 		}
@@ -89,6 +90,7 @@ char	**ft_init_map(int width, int height, char c)
 		m[i][j] = '\0';
 		i++;
 	}
+	return (m);
 }
 
 void	ft_draw_in_map(char ***m, t_rect r, t_conf c)
@@ -102,10 +104,10 @@ void	ft_draw_in_map(char ***m, t_rect r, t_conf c)
 		j = r.x;
 		while (j <= r.width && j < c.width)
 		{
-			printf("%d %d\n", i, j);
+			// printf("%d %d\n", i, j);
 			if (r.type == 'R' ||
 				(r.type == 'r' &&
-				(j == r.x + r.width || i == r.y, + r.height)))
+				(j == r.x + r.width || i == r.y + r.height)))
 				*m[i][j] = r.bg;
 			j++;
 		}
@@ -135,7 +137,6 @@ void	ft_print_map(char **m, int w, int h)
 int	main(int argc, char *argv[])
 {
 	int	ret;
-	int	fd;
 	FILE *file;
 	char	**map;
 	t_conf	conf;
