@@ -1,57 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "micro_paint.h"
 
-typedef struct	s_conf
-{
-	int	width;
-	int	height;
-	char	bg;
-}				t_conf;
+char	**g_map;
 
-typedef struct	s_rect
-{
-	char	type;
-	int	x;
-	int	y;
-	int	width;
-	int	height;
-	char	bg;
-}				t_rect;
-
-void	ft_putchar(char c)
-{
-	write(1, &c, 1);
-}
-
-void	ft_putstr(char *s)
+void	ft_free_map(int len)
 {
 	int	i;
 
-	i = 0;
-	while (s[i])
-	{
-		ft_putchar(s[i]);
-		i++;
-	}
-}
-
-void	ft_free_map(char ***m, int len)
-{
-	int	i;
-
-	if (m)
+	if (g_map)
 	{
 		i = 0;
 		while (i < len)
 		{
-			printf("||%i||\n|%s|\n", i, *m[i]);
-			free(*m[i]);
-			*m[i] = NULL;
+			free(g_map[i]);
+			g_map[i] = NULL;
 			i++;
 		}
-		free(*m);
-		*m = NULL;
+		free(g_map);
+		g_map = NULL;
 	}
 }
 
@@ -59,63 +24,65 @@ char	**ft_init_map(int width, int height, char c)
 {
 	int	i;
 	int	j;
-	char	**m;
 
-	m = malloc(height * sizeof(char *));
+	g_map = malloc(height * sizeof(char *));
 
-	if (!m)
+	if (!g_map)
 	{
-		// printf("shit1\n");
 		return (NULL);
 	}
 
 	i = 0;
 	while (i < height)
 	{
-		m[i] = malloc(width * sizeof(char) + 1);
+		g_map[i] = malloc(width * sizeof(char) + 1);
 
-		if (!m[i])
+		if (!g_map[i])
 		{
-			// printf("shit2\n");
-			ft_free_map(&m, i + 1);
+			ft_free_map(i + 1);
 			return (NULL);
 		}
 
 		j = 0;
 		while (j < width)
 		{
-			m[i][j] = c;
+			g_map[i][j] = c;
 			j++;
 		}
-		m[i][j] = '\0';
+		g_map[i][j] = '\0';
 		i++;
 	}
-	return (m);
+	return (g_map);
 }
 
-void	ft_draw_in_map(char ***m, t_rect r, t_conf c)
+void	ft_draw_in_map(t_rect r, t_conf c)
 {
 	int	i;
 	int	j;
 
 	i = r.y;
-	while (i <= r.height && i < c.height)
+	while (i <= r.height + 1 && i < c.height)
 	{
 		j = r.x;
-		while (j <= r.width && j < c.width)
+		while (j <= r.width + 1 && j < c.width)
 		{
-			// printf("%d %d\n", i, j);
-			if (r.type == 'R' ||
-				(r.type == 'r' &&
-				(j == r.x + r.width || i == r.y + r.height)))
-				*m[i][j] = r.bg;
+			if (r.type == 'R')
+			{
+				g_map[i][j] = r.bg;
+			}
+			else if (r.type == 'r'
+					&& ((i == r.height + 1 || i == r.y)
+					|| (j == r.width + 1 || j == r.x)))
+			{
+				g_map[i][j] = r.bg;
+			}
 			j++;
 		}
 		i++;
 	}
 }
 
-void	ft_print_map(char **m, int w, int h)
+void	ft_print_map(int w, int h)
 {
 	int	i;
 	int	j;
@@ -126,7 +93,7 @@ void	ft_print_map(char **m, int w, int h)
 		j = 0;
 		while (j < w)
 		{
-			ft_putchar(m[i][j]);
+			ft_putchar(g_map[i][j]);
 			j++;
 		}
 		ft_putchar('\n');
@@ -138,7 +105,6 @@ int	main(int argc, char *argv[])
 {
 	int	ret;
 	FILE *file;
-	char	**map;
 	t_conf	conf;
 	t_rect	rect;
 
@@ -163,11 +129,10 @@ int	main(int argc, char *argv[])
 		}
 
 		// allocating map
-		map = ft_init_map(conf.width, conf.height, conf.bg);
-		if (!map)
+		g_map = ft_init_map(conf.width, conf.height, conf.bg);
+		if (!g_map)
 			ft_putstr("Error: Well crap\n");
 
-		ft_print_map(map, conf.width, conf.height);
 		while (ret > 0)
 		{
 			// read data
@@ -179,20 +144,20 @@ int	main(int argc, char *argv[])
 			if (ret == 6)
 			{
 				// the important part
-				ft_draw_in_map(&map, rect, conf);
+				ft_draw_in_map(rect, conf);
 			}
-			else
+			else if (ret != -1)
 			{
-				ft_free_map(&map, conf.height);
+				ft_free_map(conf.height);
 				ft_putstr("Error: Operation file corrupted\n");
 				return (1);
 			}
 		}
 
 		// output the map
-		ft_print_map(map, conf.width, conf.height);
+		ft_print_map(conf.width, conf.height);
 		// cleaning
-		ft_free_map(&map, conf.height);
+		ft_free_map( conf.height);
 	}
 	// if more arguments or less
 	else
