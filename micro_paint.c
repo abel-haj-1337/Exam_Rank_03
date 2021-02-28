@@ -61,18 +61,18 @@ void	ft_draw_in_map(t_rect r, t_conf c)
 	int	j;
 
 	i = r.y;
-	while (i <= r.height + 1 && i < c.height)
+	while (i - r.y <= r.height && i < c.height)
 	{
 		j = r.x;
-		while (j <= r.width + 1 && j < c.width)
+		while (j - r.x <= r.width && j < c.width)
 		{
 			if (r.type == 'R')
 			{
 				g_map[i][j] = r.bg;
 			}
 			else if (r.type == 'r'
-					&& ((i == r.height + 1 || i == r.y)
-					|| (j == r.width + 1 || j == r.x)))
+					&& ((i == r.height + r.y || i == r.y)
+					|| (j == r.width + r.x || j == r.x)))
 			{
 				g_map[i][j] = r.bg;
 			}
@@ -121,6 +121,12 @@ int	main(int argc, char *argv[])
 		// store map configuration
 		ret = fscanf(file, "%d %d %c\n", &conf.width, &conf.height, &conf.bg);
 
+		if (conf.width <= 0 || conf.height <= 0)
+		{
+			ft_putstr("Error: Operation file corrupted\n");
+			return (1);
+		}
+
 		// error
 		if (ret != 3)
 		{
@@ -139,6 +145,13 @@ int	main(int argc, char *argv[])
 			ret = fscanf(file, "%c %d %d %d %d %c\n",
 				&rect.type, &rect.x, &rect.y,
 				&rect.width, &rect.height, &rect.bg);
+
+			if (rect.width <= 0 || rect.height <= 0)
+			{
+				ft_free_map(conf.height);
+				ft_putstr("Error: Operation file corrupted\n");
+				return (1);
+			}
 
 			// data is correct
 			if (ret == 6)
