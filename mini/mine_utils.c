@@ -1,4 +1,4 @@
-#include "mini_paint.h"
+#include "mine_mini_paint.h"
 
 void	ft_putchar(char c)
 {

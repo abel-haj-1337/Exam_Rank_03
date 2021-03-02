@@ -6,8 +6,23 @@
 # include <stdlib.h>
 # include <unistd.h>
 
+typedef struct s_conf
+{
+	int		width;
+	int		height;
+	char	bg;
+}	t_conf;
+
+typedef struct s_circle
+{
+	int		x;
+	int		y;
+	float	radius;
+	char	bg;
+	char	type;
+}	t_circle;
+
 void	ft_putchar(char c);
 void	ft_putstr(char *s);
-
 
 #endif
