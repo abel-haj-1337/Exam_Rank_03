@@ -1,7 +1,8 @@
-#ifndef MINI_PAINT_H
+#ifndef MINE_MINI_PAINT_H
 
-# define MINI_PAINT_H
+# define MINE_MINI_PAINT_H
 
+# include <math.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
