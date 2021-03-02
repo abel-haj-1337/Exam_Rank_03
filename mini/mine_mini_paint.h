@@ -15,8 +15,8 @@ typedef struct s_conf
 
 typedef struct s_circle
 {
-	int		x;
-	int		y;
+	float	x;
+	float	y;
 	float	radius;
 	char	bg;
 	char	type;
