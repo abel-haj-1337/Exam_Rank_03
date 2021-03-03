@@ -40,18 +40,12 @@ void	ft_draw_in_map(char ***m, t_conf co, t_circle ci)
 		{
 			// calculate distance between current position and circle center
 			d = sqrt((j - ci.x) * (j - ci.x) + (i - ci.y) * (i - ci.y));
-			if (d < 0)
-				d *= -1;
 
 			// if distance is equal or lower to circle center
-			if (d <= ci.radius)
+			if (d <= ci.radius &&
+				(ci.type == 'C' || (ci.type == 'c' && fabs(ci.radius - d) < 1)))
 			{
-				// if circle is not empty
-				// or
-				// current position is at the border of the circle
-				if (ci.type == 'C' || floor(d) == ci.radius
-					|| ceil(d) == ci.radius)
-					(*m)[i][j] = ci.bg;
+				(*m)[i][j] = ci.bg;
 			}
 			j++;
 		}
@@ -130,8 +124,7 @@ int	main(int argc, char *argv[])
 			// all 5 dimensions are given
 			if (ret == 5)
 			{
-				if (ci.x < 0 || ci.y < 0 || ci.radius <= 0
-					|| (ci.type != 'c' && ci.type != 'C'))
+				if (ci.radius <= 0 || (ci.type != 'c' && ci.type != 'C'))
 				{
 					ft_free_map(&map, co.height);
 					ft_putstr("Error: Operation file corrupted\n");
